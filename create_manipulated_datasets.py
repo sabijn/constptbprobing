@@ -85,7 +85,7 @@ if __name__=='__main__':
                 dep_str += str(dep_tok) + ' '
             const_str = ' '.join(const_tree.leaves())
             dep_str = dep_str.strip()
-            const_str = const_str.replace('\/','/').replace('LRB','(').replace('RRB',')').replace('\*','*')
+            const_str = const_str.replace(r'\/','/').replace('LRB','(').replace('RRB',')').replace(r'\*','*')
             dep_str = dep_str.replace('-LCB-','LCB').replace('-RCB-','RCB')
             if not(const_str == dep_str):
                 print(const_str)
@@ -184,7 +184,8 @@ if __name__=='__main__':
             since_last_replacement=since_last_replacement+1
             try_token = random.choice(range(sent_len))
             token = dep_sent[try_token]
-            if try_token in replaced_tokens or token['form'] in forms_to_rm:
+            if try_token in replaced_tokens:
+            # if try_token in replaced_tokens or token['form'] in forms_to_rm:
                 continue
             if token['deprel']=='punct' or token['form'].startswith("'"):
                 continue

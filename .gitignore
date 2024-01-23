@@ -1,5 +1,7 @@
 bin/
 data/
+exp_lca/
+exp_chunk/
 *.pyc
 log/
 *.hdf5
