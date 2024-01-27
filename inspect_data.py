@@ -32,26 +32,32 @@ def plot_confusion_matrix(cm, labels, name):
                     color="white" if cm[i, j] > thresh else "black",
                     fontsize=7)
     fig.tight_layout()
-    plt.savefig('name.png')
+    plt.savefig(name)
+
+def compute_confusion_matrix(path):
+    df_dev = pd.read_csv(path, sep='\t')
+    # read in test_shared_labels
+    with open(test_shared_labels, 'r') as infile:
+        shared_labels = infile.readlines()
+
+    y_true = np.array([label.replace('\n', '') for sent in shared_labels for label in sent.split(' ')])
+    y_pred = df_dev['pred_label'].to_numpy()
+
+    cm_own = confusion_matrix(y_true, y_pred, normalize='true')
+
+    return cm_own, np.unique(y_true)
 
 if __name__ == '__main__':
     full_tree_path = 'parsing-as-pretraining/exp_trees/distilbert-base-uncased/concat_lev/results.p'
     test_results_tree = 'parsing-as-pretraining/exp_trees/distilbert-base-uncased/concat_lev/pred_labels_test.tsv'
     lca_path = 'exp_lca/distilbert-base-uncased/orig2orig_concat/results.p'
+    test_shared_labels = 'parsing-as-pretraining/exp_trees/test_shared_levels.txt'
 
-    with open(full_tree_path,'rb') as infile:
-        results = pickle.load(infile)
+    # with open(full_tree_path,'rb') as infile:
+    #     results = pickle.load(infile)
 
-    cm = results['general_dev_conf_matrix']
-    idx = list(cm.index)
-    cm_numpy = cm.to_numpy()
-    plot_confusion_matrix(cm_numpy, idx, 'visualizations_own/confusion_matrix_lev_dev_given.png')
-
-    df_dev = pd.read_csv(test_results_tree, sep='\t')
-    y_true = df_dev['true_label'].to_numpy()
-    y_pred = df_dev['pred_label'].to_numpy()
-    cm_own = confusion_matrix(y_true, y_pred)
-    plot_confusion_matrix(cm_own, idx, 'visualizations_own/confusion_matrix_lev_dev_own.png')
+    cm, labels = compute_confusion_matrix(test_results_tree)
+    plot_confusion_matrix(cm, labels, 'visualizations_own/confusion_matrix_lev_dev_own.png')
 
 
 
